@@ -45,7 +45,15 @@ public class RegisterRequest {
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
     
-  
+    private String roleType;
+
+	public String getRoleType() {
+		return roleType;
+	}
+
+	public void setRoleType(String roleType) {
+		this.roleType = roleType;
+	}
 
     // We won't take role_id directly from the user for security.
     // It will be assigned in the service layer (e.g., default 'CUSTOMER').

@@ -46,6 +46,13 @@ public class Claim {
 
     @Column(name = "time_of_incident", nullable = false)
     private LocalTime timeOfIncident; // Map to time_of_incident
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "policy_id", nullable = false)
+    private Policy policy;
+
+    
+    
 
     public Policy getPolicy() {
         return policy;
@@ -127,11 +134,7 @@ public class Claim {
         this.timeOfIncident = timeOfIncident;
     }
 
-    // Many Claims to One Policy
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "policy_id", nullable = false) // Foreign key to the policies table
-    private Policy policy; // The policy this claim belongs to
-
+    
     // No need for a vehicle direct link based on the provided table schema,
     // as it's linked via policy. If you need it later, you can add it.
 }

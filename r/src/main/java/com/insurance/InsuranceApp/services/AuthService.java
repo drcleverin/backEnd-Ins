@@ -41,14 +41,33 @@ public class AuthService {
 //        Role role = roleRepository.findByRoleType(DEFAULT_CUSTOMER_ROLE)
 //                .orElseGet(() -> roleRepository.save(new Role(DEFAULT_CUSTOMER_ROLE)));
         // AuthService.java - this part remains the same after the Role constructor change
-        Role role = roleRepository.findByRoleType(DEFAULT_CUSTOMER_ROLE)
-                .orElseGet(() -> roleRepository.save(new Role(DEFAULT_CUSTOMER_ROLE)));
-
+//        Role role = roleRepository.findByRoleType(DEFAULT_CUSTOMER_ROLE)
+//                .orElseGet(() -> roleRepository.save(new Role(DEFAULT_CUSTOMER_ROLE)));
+        System.out.println(request.getRoleType());
+        String requestedRoleType = Optional.ofNullable(request.getRoleType())
+                .orElse("ADMIN")
+                .toUpperCase(); 
+        Role roleToAssign;
+        switch (requestedRoleType) {
+        case "ADMIN":
+            roleToAssign = roleRepository.findByRoleType("ADMIN") // Assuming "ADMIN" is the exact string in your DB for admin role
+                    .orElseThrow(() -> new RuntimeException("Error: Role 'ADMIN' not found in database."));
+            break;
+//        case "USER": // Assuming you want a "USER" role as well, distinct from CUSTOMER if applicable
+//            roleToAssign = roleRepository.findByRoleType("USER")
+//                    .orElseThrow(() -> new RuntimeException("Error: Role 'USER' not found in database."));
+//            break;
+        case "CUSTOMER": // This will be the default if nothing or invalid is sent
+        default:
+            roleToAssign = roleRepository.findByRoleType("CUSTOMER")
+                    .orElseThrow(() -> new RuntimeException("Error: Role 'CUSTOMER' not found in database."));
+            break;
+    }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
+        user.setRole(roleToAssign);
 
         User savedUser = userRepository.save(user);
 //        return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getRole().getRoleType()); // Changed to getRoleType()
